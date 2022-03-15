@@ -33,13 +33,15 @@
       </v-card>
 
       <v-card v-if="isResponseAvailable" color="#00bcd4" dark outlined tile>
-        <p class="ma-4  ">TESTE</p>
+        <p class="ma-4">TESTE</p>
       </v-card>
       <v-spacer></v-spacer>
 
     </div>
     <div v-else aria-colcount="">
-        
+        <v-card>
+          Aqui você cria algo
+        </v-card>
     </div>
   </v-container>
 </template>

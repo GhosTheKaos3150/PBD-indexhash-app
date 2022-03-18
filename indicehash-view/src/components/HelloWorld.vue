@@ -9,9 +9,9 @@
     - SD  = #c77800   (l)
    -->
   <v-container>
-    <div v-if="!isInit">
+    <div v-if="isInit">
       <v-spacer></v-spacer>
-      <v-card color="#00bcd4" dark outlined >
+      <v-card color="#00bcd4" dark outlined>
         <v-card-title>TESTE</v-card-title>
 
         <v-divider class="mx-4"></v-divider>
@@ -32,13 +32,19 @@
         </v-card-actions>
       </v-card>
 
-      <v-card class="mt-2" v-if="!isResponseAvailable" color="#00bcd4" dark outlined >
+      <v-card
+        class="mt-2"
+        v-if="isResponseAvailable"
+        color="#00bcd4"
+        dark
+        outlined
+      >
         <v-card-title>TESTE</v-card-title>
       </v-card>
       <v-spacer></v-spacer>
     </div>
     <div v-else>
-      <v-card color="#00bcd4" dark outlined >
+      <v-card color="#00bcd4" dark outlined>
         <v-card-title>Crie seu banco!</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <div class="ma-4">
@@ -48,7 +54,9 @@
               label="Tamanho da Pagina"
               outlined
               clearable
-              prepend-inner-icon="mdi-database-cog "
+              prepend-inner-icon="mdi-database-cog"
+              v-model="t_pag"
+              type="number"
             >
             </v-text-field>
             <v-text-field
@@ -56,15 +64,23 @@
               label="Tamanho do Bucket"
               outlined
               clearable
-              prepend-inner-icon="mdi-database-cog "
+              prepend-inner-icon="mdi-database-cog"
+              v-model="t_bucket"
+              type="number"
             >
             </v-text-field>
           </v-row>
-          <v-textarea class="ma-4" label="Seu texto aqui s2" outlined clearable></v-textarea>
+          <v-textarea
+            class="ma-4"
+            label="Seu texto aqui s2"
+            outlined
+            clearable
+            v-model="text"
+          ></v-textarea>
         </div>
         <v-card-actions class="ma-4">
           <v-spacer></v-spacer>
-          <v-btn color="#0095a8">Criar</v-btn>
+          <v-btn color="#0095a8" @click="initHash">Criar</v-btn>
         </v-card-actions>
       </v-card>
     </div>
@@ -77,8 +93,12 @@ export default {
 
   data() {
     return {
-      isInit: true,
+      isInit: false,
       isResponseAvailable: false,
+
+      text: "",
+      t_bucket: 32,
+      t_pag: 16,
     };
   },
   mounted() {
@@ -89,6 +109,22 @@ export default {
       .then((json) => {
         this.isInit = json.init;
       });
+  },
+  methods: {
+    initHash() {
+      fetch("http://localhost:3150/hash/message", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: this.text,
+          t_bucket: this.t_bucket,
+          t_pag: this.t_pag,
+        }),
+      });
+    },
   },
 };
 </script>

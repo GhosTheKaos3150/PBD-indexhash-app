@@ -9,6 +9,7 @@ def create_paginas(text, tamanho_pagina):
     print(f'{bcolors.WARNING}Criando Paginas Baseado no Texto...{bcolors.ENDC}')
 
     paginas = []
+    cardinalidade = 0
     for word in text:
         word = word.rsplit("\n")
         if not len(paginas) or paginas[-1].is_full():

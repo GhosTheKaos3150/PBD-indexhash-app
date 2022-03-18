@@ -34,13 +34,12 @@ def post_message_to_hash():
     # { 
     #   "text": str, 
     #   "tamanho_pag": int,
-    #   "tamanho_bucket": int, 
-    #   "tamanho_overflow": int
+    #   "tamanho_bucket": int
     # }
 
     print(f'{bcolors.WARNING}Criando BD com Indice Hash...{bcolors.ENDC}')
 
-    info = request.get_json()
+    info = request.json
     msg = info["text"]
 
     if not type(msg) is str:
@@ -48,8 +47,8 @@ def post_message_to_hash():
         return make_response({"status": "BAD REQUEST"}, 400)
 
     try:
-        storage.paginas, cardn = uhf.create_paginas(msg, info["tamanho_pag"])
-        storage.indice = uhf.create_indice(storage.paginas, info["tamanho_bucket"], cardn)
+        storage.paginas, cardn = uhf.create_paginas(msg, info["t_pag"])
+        storage.indice = uhf.create_indice(storage.paginas, info["t_bucket"], cardn)
     except Exception as e:
         print(e)
         print(f'{bcolors.FAIL}Não foi possível criar BD. Retornando...{bcolors.ENDC}')

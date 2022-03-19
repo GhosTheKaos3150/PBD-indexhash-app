@@ -69,14 +69,16 @@ class IndiceHash:
 
             if len(self.vetor_hash) > hash_c:
                 for tupla in self.vetor_hash[hash_c].valor:
+                    print(tupla)
                     if tupla.valor == valor:
-                        return f"Pagina: {tupla.page}" if as_str else tupla.page
+                        return f"Pagina: {tupla.page}" if as_str else {"tupla": tupla.page, "colision": False}
                 else:
-                    return self.procura_inhash(valor, self.vetor_hash[hash_c].valor[-1], as_str)
+                    if self.vetor_hash[hash_c].is_full():
+                        return self.procura_inhash(valor, self.vetor_hash[hash_c].valor[-1], as_str)
         else:
             for tupla in bucket.valor:
                 if tupla.valor == valor:
-                    return f"Pagina: {tupla.page} [COM COLISÃO]" if as_str else tupla.page
+                    return f"Pagina: {tupla.page} [COM COLISÃO]" if as_str else {"pag": tupla.page, "colision": True}
             else:
                 if bucket.is_full():
                     return self.procura_inhash(valor, bucket.valor[-1], as_str)

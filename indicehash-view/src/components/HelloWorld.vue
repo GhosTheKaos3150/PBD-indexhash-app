@@ -9,6 +9,8 @@
     - SD  = #c77800   (l)
    -->
   <v-container>
+    <v-alert v-model="notFound" transition="slide-y-transition" type="warning">Palavra Não Encontrada</v-alert>
+    <v-alert v-model="error" transition="slide-y-transition" type="error">Vish...</v-alert>
     <div v-if="isInit">
       <v-spacer></v-spacer>
       <v-card color="#00bcd4" dark outlined>
@@ -22,13 +24,14 @@
             outlined
             clearable
             prepend-inner-icon="mdi-database-search"
+            v-model="searchWord"
           >
           </v-text-field>
         </v-row>
 
         <v-card-actions class="ma-4">
           <v-spacer></v-spacer>
-          <v-btn color="#0095a8">Pesquisar</v-btn>
+          <v-btn color="#0095a8" @click="pesquisarHash">Pesquisar</v-btn>
         </v-card-actions>
       </v-card>
 
@@ -39,8 +42,14 @@
         dark
         outlined
       >
-        <v-card-title>TESTE</v-card-title>
+        <v-card-title>Resultado!</v-card-title>
+        <v-row class="ma-4">Pagina: {{pag}}</v-row>
+        <v-row class="ma-4">Colsião? {{coll}}</v-row>
+
       </v-card>
+
+      <v-btn class="mt-2" dark block color="#0095a8" @click="removeHash">REMOVER</v-btn>
+
       <v-spacer></v-spacer>
     </div>
     <div v-else>
@@ -99,6 +108,13 @@ export default {
       text: "",
       t_bucket: 32,
       t_pag: 16,
+
+      searchWord: "",
+      pag: "",
+      coll: "",
+
+      notFound: false,
+      error: false,
     };
   },
   mounted() {
@@ -107,12 +123,13 @@ export default {
         return response.json();
       })
       .then((json) => {
+        console.log(json)
         this.isInit = json.init;
       });
   },
   methods: {
-    initHash() {
-      fetch("http://localhost:3150/hash/message", {
+    async initHash() {
+      await fetch("http://localhost:3150/hash", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -124,7 +141,85 @@ export default {
           t_pag: this.t_pag,
         }),
       });
+
+      fetch("http://localhost:3150/hash/initqm")
+      .then((response) => {
+        return response.json();
+      })
+      .then((json) => {
+        console.log(json)
+        this.isInit = json.init;
+      });
+    },
+
+    async pesquisarHash() {
+      this.isResponseAvailable = false;
+
+      await fetch(`http://localhost:3150/hash/search/${this.searchWord}`)
+      .then(response => {
+        if (response.status == 404){
+          this.notFound = true;
+        } else if (response.status != 200) {
+          this.error = true;
+        } else {
+          this.isResponseAvailable = true;
+        }
+
+        return response.json();
+      })
+      .then(json => {
+        if (typeof json != undefined) {
+          var data = json.data
+          console.log(data)
+
+          this.pag = data.pag
+
+          switch (data.colision) {
+            case true:
+              this.coll = "SIM"
+              break;
+            case false:
+              this.coll = "NÃO"
+              break;
+          }
+        }
+      })
+    },
+
+    async removeHash() {
+      await fetch("http://localhost:3150/hash", {
+        method: "DELETE"
+      });
+
+      fetch("http://localhost:3150/hash/initqm")
+      .then((response) => {
+        return response.json();
+      })
+      .then((json) => {
+        console.log(json)
+        this.isInit = json.init;
+      });
+    },
+
+    hide_notFound() {
+      window.setInterval(() => {
+        this.notFound = false;
+      }, 5000);
+    },
+
+    hide_error() {
+      window.setInterval(() => {
+        this.error = false;
+      }, 5000);
     },
   },
+  watch: {
+    notFound() {
+      this.hide_notFound();
+    },
+    error() {
+      this.hide_error();
+    },
+  }
 };
 </script>

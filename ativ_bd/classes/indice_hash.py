@@ -1,7 +1,7 @@
 from math import floor, ceil
 from classes.bucket import Bucket
 from classes.tuplas import Tupla
-
+from util.bcolors import Bcolors as bcolors
 
 class IndiceHash:
 
@@ -9,11 +9,15 @@ class IndiceHash:
     size_vetor: int
     max_overflow: int
     collisions: int
+    overflow: int
+    counter_page_access: int
 
     def __init__(self, size, overflow, card):
         self.size_vetor = size
         self.max_overflow = overflow
         self.collisions = 0
+        self.overflow = 0
+        self.counter_page_access = 0
 
         self.vetor_hash = []
         for i in range(ceil((card/size)+overflow)):
@@ -64,6 +68,9 @@ class IndiceHash:
         return s_hash
 
     def procura_inhash(self, valor, bucket=None, as_str=False):
+        self.counter_page_access = 0
+        #print(f'{bcolors.WARNING}CHAMANDA IN HASH{bcolors.ENDC}')
+        
         if bucket is None:
             hash_c = self.calculo_hash(valor)
 
@@ -71,14 +78,23 @@ class IndiceHash:
                 for tupla in self.vetor_hash[hash_c].valor:
                     print(tupla)
                     if tupla.valor == valor:
-                        return f"Pagina: {tupla.page}" if as_str else {"tupla": tupla.page, "colision": False}
+                        self.counter_page_access+=1
+                        return f"Pagina: {tupla.page}" if as_str else {"pag": tupla.page, 
+                        "colission":self.collisions ,
+                        "overflow":self.overflow, 
+                        "access":self.counter_page_access}
                 else:
                     if self.vetor_hash[hash_c].is_full():
                         return self.procura_inhash(valor, self.vetor_hash[hash_c].valor[-1], as_str)
         else:
             for tupla in bucket.valor:
                 if tupla.valor == valor:
-                    return f"Pagina: {tupla.page} [COM COLISÃO]" if as_str else {"pag": tupla.page, "colision": True}
+                    self.counter_page_access+=1
+                    #return f"Pagina: {tupla.page} [COM COLISÃO]" if as_str else {"pag": tupla.page,"colissions":self.collisions ,"colision": True,"access":self.counter_page_access}
+                    return f"Pagina: {tupla.page}" if as_str else {"pag": tupla.page, 
+                    "colission":self.collisions ,
+                    "overflow":self.overflow, 
+                    "access":self.counter_page_access}
             else:
                 if bucket.is_full():
                     return self.procura_inhash(valor, bucket.valor[-1], as_str)

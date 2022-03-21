@@ -7,6 +7,7 @@ def create_paginas(text, tamanho_pagina):
         text = text.split(" ")
 
     print(f'{bcolors.WARNING}Criando Paginas Baseado no Texto...{bcolors.ENDC}')
+    
 
     paginas = []
     cardinalidade = 0

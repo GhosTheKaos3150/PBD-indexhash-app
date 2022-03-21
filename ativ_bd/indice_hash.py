@@ -20,6 +20,7 @@ class IndiceHash:
             self.vetor_hash.append(Bucket(i, size))
 
     def definir_indice(self, info: Tupla, rec=0):
+    
         if self.vetor_hash[self.calculo_hash(info.pk)+rec].is_full() and \
                 not self.vetor_hash[self.calculo_hash(info.pk)+rec].have_overflow:
             self.vetor_hash[self.calculo_hash(info.pk) + rec].set_overflow(

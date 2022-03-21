@@ -44,7 +44,9 @@
       >
         <v-card-title>Resultado!</v-card-title>
         <v-row class="ma-4">Pagina: {{pag}}</v-row>
-        <v-row class="ma-4">Colsião? {{coll}}</v-row>
+        <v-row class="ma-4">Colisão: {{coll}}</v-row>
+        <v-row class="ma-4">Overflow: {{overflow}}</v-row>
+        <v-row class="ma-4">Acesso: {{access}}</v-row>
 
       </v-card>
 
@@ -112,6 +114,8 @@ export default {
       searchWord: "",
       pag: "",
       coll: "",
+      overflow: "",
+      access: "",
 
       notFound: false,
       error: false,
@@ -173,15 +177,19 @@ export default {
           console.log(data)
 
           this.pag = data.pag
+          this.coll = data.colission
+          this.overflow = data.overflow
 
-          switch (data.colision) {
-            case true:
-              this.coll = "SIM"
-              break;
-            case false:
-              this.coll = "NÃO"
-              break;
-          }
+          // switch (data.colision) {
+          //   case true:
+          //     this.coll = "SIM"
+          //     break;
+          //   case false:
+          //     this.coll = "NÃO"
+          //     break;
+          // }
+
+          this.access = data.access
         }
       })
     },

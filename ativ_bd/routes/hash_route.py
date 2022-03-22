@@ -8,6 +8,7 @@ hash_route = Blueprint("hash_route", __name__)
 
 @hash_route.route("/hash/printPaginas")
 def print_paginas():
+
     return str(storage.paginas[0])
 
 

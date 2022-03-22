@@ -88,10 +88,19 @@
             clearable
             v-model="text"
           ></v-textarea>
+          <v-file-input
+            dense
+            v-model="textFile"
+            accept="text/plain"
+            placeholder="Ou insira seu arquivo TXT :D"
+            prepend-icon="mdi-file"
+            @change="loadFile"
+          ></v-file-input>
+          <v-progress-linear indeterminate rounded color="yellow" :active="fileLoading"></v-progress-linear>
         </div>
         <v-card-actions class="ma-4">
           <v-spacer></v-spacer>
-          <v-btn color="#0095a8" @click="initHash">Criar</v-btn>
+          <v-btn color="#0095a8" :disabled="fileLoading" @click="initHash">Criar</v-btn>
         </v-card-actions>
       </v-card>
     </div>
@@ -108,6 +117,7 @@ export default {
       isResponseAvailable: false,
 
       text: "",
+      textFile: null,
       t_bucket: 32,
       t_pag: 16,
 
@@ -119,6 +129,8 @@ export default {
 
       notFound: false,
       error: false,
+
+      fileLoading: false
     };
   },
   mounted() {
@@ -132,7 +144,25 @@ export default {
       });
   },
   methods: {
+    loadFile() {
+      this.fileLoading = true
+
+      if (this.textFile != null) {
+        var reader = new FileReader();
+
+        reader.onload = () => {
+          this.text = reader.result;
+          this.fileLoading = false;
+        };
+        reader.readAsText(this.textFile);
+      } else {
+        this.fileLoading = false; 
+      }
+    },
     async initHash() {
+      console.log(this.t_bucket, this.t_pag)
+      console.log(typeof this.t_bucket, typeof this.t_pag)
+
       await fetch("http://localhost:3150/hash", {
         method: "POST",
         headers: {
@@ -141,8 +171,8 @@ export default {
         },
         body: JSON.stringify({
           text: this.text,
-          t_bucket: this.t_bucket,
-          t_pag: this.t_pag,
+          t_bucket: parseInt(this.t_bucket),
+          t_pag: parseInt(this.t_pag),
         }),
       });
 
@@ -199,7 +229,7 @@ export default {
         method: "DELETE"
       });
 
-      fetch("http://localhost:3150/hash/initqm")
+      await fetch("http://localhost:3150/hash/initqm")
       .then((response) => {
         return response.json();
       })
@@ -207,6 +237,9 @@ export default {
         console.log(json)
         this.isInit = json.init;
       });
+
+      this.searchWord = ""
+      this.isResponseAvailable = false
     },
 
     hide_notFound() {

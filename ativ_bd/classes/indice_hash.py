@@ -3,6 +3,7 @@ from classes.bucket import Bucket
 from classes.tuplas import Tupla
 from util.bcolors import Bcolors as bcolors
 
+
 class IndiceHash:
 
     vetor_hash: list
@@ -41,38 +42,30 @@ class IndiceHash:
                 self.vetor_hash[self.calculo_hash(info.pk)+rec].have_overflow:
             self.vetor_hash[self.calculo_hash(info.pk) + rec].add_value(info)
             self.collisions += 1
-            #print("OVERFLOW GERADO 2 ///////////")
-            
-           
-        else:    
-            self.vetor_hash[self.calculo_hash(info.pk) + rec].valor.append(info)
-        
-        for bucket in self.vetor_hash:
-            if bucket.have_overflow():
-                self.overflow_counter += 1
-                
+        else:
+            self.vetor_hash[self.calculo_hash(
+                info.pk) + rec].valor.append(info)
 
     def calculo_hash(self, indice: str):
         indice = [ord(x) for x in indice]
         word_hash = ""
         for i in indice:
             word_hash += str(i)
-        
 
         size = len(str(len(self.vetor_hash)))
-       
+
         if len(word_hash) > 0:
             word_hash = int(word_hash[0])
-            
+
         else:
             word_hash = int(word_hash[0:size])
-        
+
         word_hash = int(word_hash)
 
         s_hash = floor(word_hash)
         #print("s_hash = ",word_hash)
         # s_hash = floor(word_hash/(10^len(self.vetor_hash)))
-        #EX: WORD HASH = 12345678 / LEN.VETOR HASH = 4
+        # EX: WORD HASH = 12345678 / LEN.VETOR HASH = 4
         #S_HASH = FLOOR(12345678 / 10^4)
         #S_HASH = FLOOR(1234.5678)
         #S_HASH = 1234
@@ -88,23 +81,23 @@ class IndiceHash:
                 for tupla in self.vetor_hash[hash_c].valor:
                     #print(tupla.valor)
                     if tupla.valor == valor:
-                        self.counter_page_access+=1
-                        return f"Pagina: {tupla.page}" if as_str else {"pag": tupla.page, 
-                        "colission":self.collisions ,
-                        "overflow":self.overflow_counter, 
-                        "access":self.counter_page_access}
+                        self.counter_page_access += 1
+                        return f"Pagina: {tupla.page}" if as_str else {"pag": tupla.page,
+                                                                       "colission": self.print_collisions(False),
+                                                                       "overflow": self.print_overflow(False),
+                                                                       "access": self.counter_page_access}
                 else:
                     if self.vetor_hash[hash_c].is_full():
                         return self.procura_inhash(valor, self.vetor_hash[hash_c].valor[-1], as_str)
         else:
             for tupla in bucket.valor:
                 if tupla.valor == valor:
-                    self.counter_page_access+=1
-                    #return f"Pagina: {tupla.page} [COM COLISÃO]" if as_str else {"pag": tupla.page,"colissions":self.collisions ,"colision": True,"access":self.counter_page_access}
-                    return f"Pagina: {tupla.page}" if as_str else {"pag": tupla.page, 
-                    "colission":self.collisions ,
-                    "overflow":self.overflow_counter, 
-                    "access":self.counter_page_access}
+                    self.counter_page_access += 1
+                    # return f"Pagina: {tupla.page} [COM COLISÃO]" if as_str else {"pag": tupla.page,"colissions":self.collisions ,"colision": True,"access":self.counter_page_access}
+                    return f"Pagina: {tupla.page}" if as_str else {"pag": tupla.page,
+                                                                   "colission": self.print_collisions(False),
+                                                                   "overflow": self.print_overflow(False),
+                                                                   "access": self.counter_page_access}
             else:
                 if bucket.is_full():
                     return self.procura_inhash(valor, bucket.valor[-1], as_str)
@@ -129,14 +122,17 @@ class IndiceHash:
         self.print_overflow()
         self.print_collisions()
 
-    def print_collisions(self):
+    def print_collisions(self, yes=True):
         print("Collisions:", self.collisions)
 
-    def print_overflow(self):
+        return "OK" if yes else self.collisions
+
+    def print_overflow(self, yes=True):
         overflows = 0
         for bucket in self.vetor_hash:
             if bucket.have_overflow():
                 overflows += 1
 
+        print("\nOverflow:", overflows)
 
-        print("overflow" + overflows)
+        return "OK" if yes else overflows

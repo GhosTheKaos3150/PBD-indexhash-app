@@ -34,7 +34,7 @@ class Pagina:
             if tupla.pk == pk:
                 self.tuplas.pop(index)
     
-    def to_string(self):
+    def __str__(self):
         str_final = ""
         for index, tupla in enumerate(self.tuplas):
             str_final += f"{index}. {tupla.valor}"

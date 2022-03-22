@@ -1,9 +1,11 @@
+import re
 from classes.pagina import Pagina
 from classes.indice_hash import IndiceHash
 from util.bcolors import Bcolors as bcolors
 
 def create_paginas(text, tamanho_pagina):
     if type(text) is str:
+        text = text.replace("\n", " ")
         text = text.split(" ")
 
     print(f'{bcolors.WARNING}Criando Paginas Baseado no Texto...{bcolors.ENDC}')
@@ -12,7 +14,6 @@ def create_paginas(text, tamanho_pagina):
     paginas = []
     cardinalidade = 0
     for word in text:
-        word = word.rsplit("\n")
         if not len(paginas) or paginas[-1].is_full():
             paginas.append(Pagina(len(paginas), tamanho_pagina))
         

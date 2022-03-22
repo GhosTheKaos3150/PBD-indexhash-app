@@ -6,6 +6,11 @@ import armazenamento as storage
 hash_route = Blueprint("hash_route", __name__)
 
 
+@hash_route.route("/hash/printPaginas")
+def print_paginas():
+    return str(storage.paginas[0])
+
+
 @hash_route.route("/hash/initqm")
 def get_storage_init():
     return make_response({"status": "OK", "init": bool(storage.paginas)}, 200)
